@@ -1,6 +1,7 @@
 import Image from "next/image";
 import React, {useState} from "react";
 import {FaCamera} from "react-icons/fa";
+import ContextMenu from "./ContextMenu";
 
 function Avatar({type, image, setImage}) {
   const [hover, setHover] = useState(false);
@@ -9,6 +10,24 @@ function Avatar({type, image, setImage}) {
     x: 0,
     y: 0,
   });
+  const contextMenuOptions = [
+    {
+      name: "Take Photo",
+      callback: () => {},
+    },
+    {
+      name: "Choose from Library",
+      callback: () => {},
+    },
+    {
+      name: "Upload Photo",
+      callback: () => {},
+    },
+    {
+      name: "Remove Photo",
+      callback: () => {},
+    },
+  ];
   const showContextMenu = (e) => {
     e.preventDefault();
     setIsContextMenuVisible(true);
@@ -74,6 +93,14 @@ function Avatar({type, image, setImage}) {
           </div>
         )}
       </div>
+      {isContextMenuVisible && (
+        <ContextMenu
+          options={contextMenuOptions}
+          coordinates={contextMenuCoordinates}
+          contextMenu={isContextMenuVisible}
+          setContextMenu={setIsContextMenuVisible}
+        />
+      )}
     </>
   );
 }
