@@ -1,15 +1,28 @@
 import Image from "next/image";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {FaCamera} from "react-icons/fa";
 import ContextMenu from "./ContextMenu";
+import PhotoPicker from "./PhotoPicker";
 
 function Avatar({type, image, setImage}) {
   const [hover, setHover] = useState(false);
   const [isContextMenuVisible, setIsContextMenuVisible] = useState(false);
+  const [grabPhoto, setGrabPhoto] = useState(false);
   const [contextMenuCoordinates, setContextMenuCoordinates] = useState({
     x: 0,
     y: 0,
   });
+  useEffect(() => {
+    if (grabPhoto) {
+      const data = document.getElementById("photo-picker");
+      data.click();
+      document.body.onfocus = (e) => {
+        setTimeout(() => {
+          setGrabPhoto(false);
+        }, 1000);
+      };
+    }
+  }, [grabPhoto]);
   const contextMenuOptions = [
     {
       name: "Take Photo",
@@ -21,17 +34,36 @@ function Avatar({type, image, setImage}) {
     },
     {
       name: "Upload Photo",
-      callback: () => {},
+      callback: () => {
+        setGrabPhoto(true);
+      },
     },
     {
       name: "Remove Photo",
-      callback: () => {},
+      callback: () => {
+        setImage("/default_avatar.png");
+      },
     },
   ];
   const showContextMenu = (e) => {
     e.preventDefault();
     setIsContextMenuVisible(true);
     setContextMenuCoordinates({x: e.pageX, y: e.pageY});
+  };
+
+  const photoPickerChange = (e) => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    const data = document.createElement("img");
+    reader.onload = function (e) {
+      data.src = e.target.result;
+      data.setAttribute("data-src", e.target.result);
+    };
+    reader.readAsDataURL(file);
+    setTimeout(() => {
+      console.log(data.src);
+      setImage(data.src);
+    }, 100);
   };
   return (
     <>
@@ -101,6 +133,7 @@ function Avatar({type, image, setImage}) {
           setContextMenu={setIsContextMenuVisible}
         />
       )}
+      {grabPhoto && <PhotoPicker onChange={photoPickerChange} />}
     </>
   );
 }
