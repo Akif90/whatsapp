@@ -4,12 +4,14 @@ import {FaCamera} from "react-icons/fa";
 import ContextMenu from "./ContextMenu";
 import PhotoPicker from "./PhotoPicker";
 import PhotoLibrary from "./PhotoLibrary";
+import CapturePhoto from "./CapturePhoto";
 
 function Avatar({type, image, setImage}) {
   const [hover, setHover] = useState(false);
   const [isContextMenuVisible, setIsContextMenuVisible] = useState(false);
   const [grabPhoto, setGrabPhoto] = useState(false);
   const [showPhotoLibrary, setShowPhotoLibrary] = useState(false);
+  const [showCapturePhoto, setShowCapturePhoto] = useState(false);
   const [contextMenuCoordinates, setContextMenuCoordinates] = useState({
     x: 0,
     y: 0,
@@ -28,7 +30,9 @@ function Avatar({type, image, setImage}) {
   const contextMenuOptions = [
     {
       name: "Take Photo",
-      callback: () => {},
+      callback: () => {
+        setShowCapturePhoto(true);
+      },
     },
     {
       name: "Choose from Library",
@@ -144,6 +148,12 @@ function Avatar({type, image, setImage}) {
         />
       )}
       {grabPhoto && <PhotoPicker onChange={photoPickerChange} />}
+      {showCapturePhoto && (
+        <CapturePhoto
+          setImage={setImage}
+          setShowCapturePhoto={setShowCapturePhoto}
+        />
+      )}
     </>
   );
 }
