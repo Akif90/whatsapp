@@ -34,7 +34,13 @@ function login() {
         });
         router.push("/onboarding");
       } else {
-        const {email, name, id, profilePicture: profileImage, status} = data;
+        const {
+          email,
+          name,
+          id,
+          profilePicture: profileImage,
+          status,
+        } = data.data;
         dispatch({
           type: reducerCases.SET_USER_INFO,
           userInfo: {name, id, email, profileImage, status},

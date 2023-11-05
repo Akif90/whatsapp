@@ -4,7 +4,7 @@ import React from "react";
 function Empty() {
   return (
     <div
-      className="border-conversation-border border-1 w-full
+      className="border-conversation-border border-l w-full
       bg-panel-header-background flex flex-col justify-center items-center
       border-b-4 h-[100vvh] border-b-icon-green 
     "
