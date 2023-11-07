@@ -16,4 +16,20 @@ model User{
   name  String
   profilePicture String @default("")
   about String @default("")
+  sentMessages Message[] @relation("sentMessage")
+  recievedMessages Message[] @relation("recievedMessage")
+
+}
+
+model Message{
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  sender   User?   @relation("sentMessage", fields: [senderId], references: [id])
+  senderId String? @unique @db.ObjectId
+  reciever   User?   @relation("recievedMessage", fields: [recieverId], references: [id])
+  recieverId String? @unique @db.ObjectId
+  type String @default("text")
+  message String
+  messageStatus String @default("sent")
+  createdAt DateTime @default(now())
+
 }
