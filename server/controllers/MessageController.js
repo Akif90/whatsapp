@@ -14,7 +14,7 @@ export const addMessage = async (req, res, next) => {
               id: from,
             },
           },
-          reciever: {
+          receiver: {
             connect: {
               id: to,
             },
@@ -23,12 +23,57 @@ export const addMessage = async (req, res, next) => {
         },
         include: {
           sender: true,
-          reciever: true,
+          receiver: true,
         },
       });
       return res.status(201).send({message: newMessage});
     }
     return res.status(400).send("From, to and Message required");
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getMessages = async (req, res, next) => {
+  try {
+    const prisma = generatePrismaClient();
+    const {from, to} = req.params;
+    const messages = await prisma.message.findMany({
+      where: {
+        OR: [
+          {
+            senderId: from,
+            receiverId: to,
+          },
+          {
+            senderId: to,
+            receiverId: from,
+          },
+        ],
+      },
+      orderBy: {
+        id: "asc",
+      },
+    });
+
+    const unreadMessages = [];
+    messages.forEach((message, ind) => {
+      if (message.messageStatus !== "read" && message.senderId === to) {
+        messages[ind].messageStatus = "read";
+        unreadMessages.push(message.id);
+      }
+    });
+    await prisma.message.updateMany({
+      where: {
+        id: {
+          in: unreadMessages,
+        },
+      },
+      data: {
+        messageStatus: "read",
+      },
+    });
+    res.status(200).json({messages});
   } catch (error) {
     next(error);
   }
