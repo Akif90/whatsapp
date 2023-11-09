@@ -1,4 +1,5 @@
 import generatePrismaClient from "../utils/PrismaClient.js";
+import {renameSync} from "fs";
 
 export const addMessage = async (req, res, next) => {
   try {
@@ -74,6 +75,33 @@ export const getMessages = async (req, res, next) => {
       },
     });
     res.status(200).json({messages});
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const addImageMessage = async (req, res, next) => {
+  try {
+    if (req.file) {
+      const date = Date.now();
+      let fileName = "uploads/images/" + date + req.file.originalname;
+      renameSync(req.file.path, fileName);
+      const prisma = generatePrismaClient();
+      const {from, to} = req.query;
+      if (from && to) {
+        const message = await prisma.message.create({
+          data: {
+            message: fileName,
+            type: "image",
+            sender: {connect: {id: from}},
+            receiver: {connect: {id: to}},
+          },
+        });
+        return res.status(201).json({message});
+      }
+      return res.status(400).send("From, to are required");
+    }
+    return res.status(400).send("Missing Files");
   } catch (error) {
     next(error);
   }
