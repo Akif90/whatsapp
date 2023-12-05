@@ -10,7 +10,6 @@ import {ImAttachment} from "react-icons/im";
 import {MdSend} from "react-icons/md";
 import PhotoPicker from "../common/PhotoPicker";
 import dynamic from "next/dynamic";
-import {headers} from "../../../next.config";
 const CaptureAudio = dynamic(() => import("../common/CaptureAudio"), {
   ssr: false,
 });

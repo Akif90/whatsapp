@@ -7,8 +7,9 @@ import {Server} from "socket.io";
 dotenv.config();
 
 const app = express();
-app.use("/uploads/images", express.static("uploads/images"));
 app.use(cors());
+app.use("/uploads/images", express.static("uploads/images"));
+app.use("/uploads/recordings", express.static("uploads/recordings"));
 app.use(express.json());
 app.use("/api/auth", AuthRoutes);
 app.use("/api/messages", MessageRoutes);

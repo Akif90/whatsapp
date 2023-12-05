@@ -1,4 +1,7 @@
 import {useStateProvider} from "@/context/StateContext";
+import {reducerCases} from "@/context/constants";
+import {ADD_AUDIO_MESSAGES} from "@/utils/ApiRoutes";
+import axios from "axios";
 import React, {useEffect, useRef, useState} from "react";
 import {FaMicrophone, FaPause, FaPlay, FaStop, FaTrash} from "react-icons/fa";
 import {MdSend} from "react-icons/md";
@@ -87,6 +90,8 @@ function CaptureAudio({onChange}) {
     setTotalDuration(0);
     setCurrentPlayBackTime(0);
     setIsRecording(true);
+    setRecordedAudio(null);
+
     navigator.mediaDevices
       .getUserMedia({audio: true})
       .then((stream) => {
@@ -119,6 +124,7 @@ function CaptureAudio({onChange}) {
       };
     }
   }, [recordedAudio]);
+
   const handlePlayRecording = () => {
     if (recordedAudio) {
       waveForm.stop();
@@ -133,7 +139,37 @@ function CaptureAudio({onChange}) {
     setIsPlaying(false);
   };
 
-  const sendRecording = async () => {};
+  const sendRecording = async (e) => {
+    try {
+      const formData = new FormData();
+      formData.append("audio", renderedAudio);
+      const res = await axios.post(ADD_AUDIO_MESSAGES, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        params: {
+          from: userInfo.id,
+          to: currentChatUser.id,
+        },
+      });
+      if (res.status === 201) {
+        socket.current.emit("send-msg", {
+          from: userInfo?.id,
+          to: currentChatUser?.id,
+          message: res.data.message,
+        });
+        dispatch({
+          type: reducerCases.ADD_MESSAGE,
+          newMessage: {
+            ...res.data.message,
+          },
+          fromSelf: true,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const formatTime = (time) => {
     if (isNaN(time)) return "00:00";
@@ -166,7 +202,7 @@ function CaptureAudio({onChange}) {
                 {!isPlaying ? (
                   <FaPlay onClick={handlePlayRecording} />
                 ) : (
-                  <FaStop onCanPlay={handlePauseRecording} />
+                  <FaStop onClick={handlePauseRecording} />
                 )}
               </>
             )}
@@ -192,7 +228,7 @@ function CaptureAudio({onChange}) {
           <FaPause className="text-red-500" onClick={handleStopRecording} />
         )}
       </div>
-      <div className="">
+      <div>
         <MdSend
           className="text-panel-header-icon cursor-pointer mr-4 "
           title="Send"
