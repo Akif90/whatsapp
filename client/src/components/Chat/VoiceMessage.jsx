@@ -43,7 +43,6 @@ function VoiceMessage({message}) {
     const audioURL = `${HOST}/${message.message}`;
     const audio = new Audio(audioURL);
     setAudioMessage(audio);
-    // console.log(waveform);
     waveform.on("ready", () => {
       setTotalDuration(waveform.current.getDuration());
     });
