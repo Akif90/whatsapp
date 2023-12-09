@@ -19,7 +19,6 @@ function Main() {
   const [socketEvent, setSocketEvent] = useState(false);
   const [{userInfo, currentChatUser, messagesSearch}, dispatch] =
     useStateProvider();
-  console.log(userInfo);
   useEffect(() => {
     if (redirectLogin) router.push("/login");
   }, [redirectLogin]);
