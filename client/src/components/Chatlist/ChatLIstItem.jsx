@@ -63,7 +63,7 @@ function ChatLIstItem({data, isContactsPage = false}) {
                 sm:max-w-[250px] md:max-w-[300px] lg:max-w-[200px] xl:max-w-[300px]
                 "
                 >
-                  {data?.senderId === userInfo.id && (
+                  {data?.senderId === userInfo?.id && (
                     <MessageStatus messageStatus={data.messageStatus} />
                   )}
                   {data.type === "text" && (
