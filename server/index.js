@@ -26,9 +26,11 @@ global.onlineUsers = new Map();
 
 io.on("connection", (socket) => {
   global.chatSocket = socket;
+
   socket.on("add-user", (userId) => {
     onlineUsers.set(userId, socket.id);
   });
+
   socket.on("send-msg", (data) => {
     const sendUserSocket = onlineUsers.get(data.to);
     console.log(data);
@@ -38,5 +40,46 @@ io.on("connection", (socket) => {
         message: data.message,
       });
     }
+  });
+
+  socket.on("outgoing-voice-call", (data) => {
+    const sendUserSocket = onlineUsers.get(data.to);
+    if (sendUserSocket) {
+      socket.to(sendUserSocket).emit("incoming-voice-call", {
+        from: data.from,
+        roomId: data.roomId,
+        callType: data.callType,
+      });
+    }
+  });
+
+  socket.on("outgoing-video-call", (data) => {
+    const sendUserSocket = onlineUsers.get(data.to);
+    if (sendUserSocket) {
+      socket.to(sendUserSocket).emit("incoming-video-call", {
+        from: data.from,
+        roomId: data.roomId,
+        callType: data.callType,
+      });
+    }
+  });
+
+  socket.on("reject-voice-call", (data) => {
+    const sendUserSocket = onlineUsers.get(data.from);
+    if (sendUserSocket) {
+      socket.to(sendUserSocket).emit("voice-call-rejected");
+    }
+  });
+
+  socket.on("reject-video-call", (data) => {
+    const sendUserSocket = onlineUsers.get(data.from);
+    if (sendUserSocket) {
+      socket.to(sendUserSocket).emit("video-call-rejected");
+    }
+  });
+
+  socket.on("accept-incoming-call", ({id}) => {
+    const sendUserSocket = onlineUsers.get(id);
+    socket.to(sendUserSocket).emit("accept-call");
   });
 });
