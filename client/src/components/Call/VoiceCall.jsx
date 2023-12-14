@@ -11,7 +11,7 @@ function VoiceCall() {
         to: voiceCall.id,
         from: {
           id: userInfo.id,
-          profilePicture: userInfo.profilePicture,
+          profilePicture: userInfo.profileImage,
           name: userInfo.name,
         },
         callType: voiceCall.callType,

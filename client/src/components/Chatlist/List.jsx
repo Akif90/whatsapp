@@ -16,7 +16,6 @@ function List() {
         } = await axios.get(`${GET_INITIAL_CONTACTS_MESSAGES}/${userInfo.id}`);
         dispatch({type: reducerCases.SET_ONLINE_USERS, onlineUsers});
         dispatch({type: reducerCases.SET_USER_CONTACTS, userContacts: users});
-        console.log(users);
       } catch (error) {
         console.log(error);
       }
