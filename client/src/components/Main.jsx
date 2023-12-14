@@ -55,8 +55,8 @@ function Main() {
 
   useEffect(() => {
     if (socket.current && !socketEvent) {
-      console.log("here");
       socket.current.on("msg-receive", (data) => {
+        console.log("here");
         dispatch({
           type: reducerCases.ADD_MESSAGE,
           newMessage: {
@@ -87,6 +87,13 @@ function Main() {
         socket.current.on("video-call-rejected", () => {
           dispatch({
             type: reducerCases.END_CALL,
+          });
+        });
+
+        socket.current.on("online-users", ({onlineUsers}) => {
+          dispatch({
+            type: reducerCases.SET_ONLINE_USERS,
+            onlineUsers,
           });
         });
       });
