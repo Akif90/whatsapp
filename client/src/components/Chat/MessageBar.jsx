@@ -54,6 +54,7 @@ function MessageBar() {
       };
     }
   }, [grabPhoto]);
+
   const sendMessage = async () => {
     try {
       const {data} = await axios.post(SEND_MESSAGE, {
@@ -74,6 +75,7 @@ function MessageBar() {
         fromSelf: true,
       });
       setMessage("");
+      setShowAudioRecorder(false);
     } catch (error) {
       console.log(error);
     }

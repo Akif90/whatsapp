@@ -85,6 +85,7 @@ function CaptureAudio({onChange}) {
       });
     }
   };
+
   const handleStartRecording = () => {
     setRecordingDuration(0);
     setTotalDuration(0);
@@ -179,6 +180,7 @@ function CaptureAudio({onChange}) {
       .toString()
       .padStart(2, "0")}`;
   };
+
   return (
     <div className="flex text-2xl w-full justify-end items-center">
       <div className="pt-1">

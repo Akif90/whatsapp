@@ -54,6 +54,17 @@ function Main() {
   });
 
   useEffect(() => {
+    if (userInfo) {
+      socket.current = io(HOST);
+      socket.current.emit("add-user", userInfo.id);
+      dispatch({
+        type: reducerCases.SET_SOCKET,
+        socket,
+      });
+    }
+  }, [userInfo]);
+
+  useEffect(() => {
     if (socket.current && !socketEvent) {
       socket.current.on("msg-receive", (data) => {
         dispatch({
@@ -99,17 +110,6 @@ function Main() {
       setSocketEvent(true);
     }
   }, [socket.current]);
-
-  useEffect(() => {
-    if (userInfo) {
-      socket.current = io(HOST);
-      socket.current.emit("add-user", userInfo.id);
-      dispatch({
-        type: reducerCases.SET_SOCKET,
-        socket,
-      });
-    }
-  }, [userInfo]);
 
   useEffect(() => {
     const getMessages = async () => {

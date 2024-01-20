@@ -1,15 +1,27 @@
 import {useStateProvider} from "@/context/StateContext";
 import {calculateTime} from "@/utils/CalculateTime";
-import React from "react";
+import React, {useEffect, useState} from "react";
 import MessageStatus from "../common/MessageStatus";
 import ImageMessage from "./ImageMessage";
 import dynamic from "next/dynamic";
+import ContextMenu from "../common/ContextMenu";
+import axios from "axios";
+import {DELETE_MESSAGE} from "@/utils/ApiRoutes";
 const VoiceMessage = dynamic(() => import("./VoiceMessage"), {ssr: false});
 
 function ChatContainer() {
   const [{messages, currentChatUser, userInfo}] = useStateProvider();
+
+  useEffect(() => {
+    const container = document.getElementById("scroll-able");
+    container.scrollTo(0, container.scrollHeight);
+  }, [messages]);
+
   return (
-    <div className="h-[80vh] w-full flex-grow overflow-auto custom-scrollbar">
+    <div
+      id="scroll-able"
+      className="h-[80vh] w-full flex-grow overflow-auto custom-scrollbar"
+    >
       <div className="bg-chat-background bg-fixed h-full w-full opacity-5 fixed left-0 z-0"></div>
       <div className="mx-10 my-6 relative bottom-0 z-40 left-0">
         <div className="flex w-full">
@@ -22,12 +34,12 @@ function ChatContainer() {
                     message.senderId === currentChatUser.id
                       ? "justify-start"
                       : "justify-end"
-                  } flex`}
+                  } flex relative`}
                 >
                   {message.type === "text" && (
                     <div
                       className={`text-white px-2 py-[5px] text-sm rounded-md
-                  flex gap-2 items-end max-w-[45%] ${
+                  flex gap-2 items-end max-w-[45%]  ${
                     message.senderId === currentChatUser.id
                       ? "bg-incoming-background"
                       : "bg-outgoing-background"

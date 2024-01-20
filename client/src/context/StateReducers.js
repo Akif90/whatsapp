@@ -131,6 +131,12 @@ const reducer = (state, action) => {
         currentChatUser: undefined,
       };
     }
+    case reducerCases.SET_DELETE_MESSAGE: {
+      return {
+        ...state,
+        messages: messages.filter((msg) => msg.id !== action.id),
+      };
+    }
     default:
       return state;
   }

@@ -44,7 +44,7 @@ function ChatListHeader() {
         <>
           <BsThreeDotsVertical
             title="Menu"
-            className="text-panel-header-icon cursor-pointer text-xl"
+            className="text-panel-header-icon cursor-pointer text-x"
             onClick={(e) => showContextMenu(e)}
             id="context-opener"
           />
