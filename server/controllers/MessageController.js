@@ -162,7 +162,6 @@ export const getInitialContactsWithMessages = async (req, res, next) => {
     });
     const messages = [...user.sentMessages, ...user.recievedMessages];
     messages.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-    // console.log(messages);
     const users = new Map();
     const messageStatusChange = [];
     messages.forEach((msg) => {
@@ -207,7 +206,6 @@ export const getInitialContactsWithMessages = async (req, res, next) => {
             totalUnreadMessages: messageStatus !== "read" ? 1 : 0,
           };
         }
-        // console.log(msg);
         users.set(calculatedId, {
           ...user,
         });
@@ -236,6 +234,19 @@ export const getInitialContactsWithMessages = async (req, res, next) => {
       users: Array.from(users.values()),
       onlineUsers: Array.from(onlineUsers.keys()),
     });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteMessage = async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    const prisma = generatePrismaClient();
+    const deletedMessage = await prisma.message.delete({
+      where: {id},
+    });
+    return res.status(200).json({message: "HIT THE API"});
   } catch (error) {
     next(error);
   }

@@ -26,16 +26,28 @@ global.onlineUsers = new Map();
 
 io.on("connection", (socket) => {
   global.chatSocket = socket;
-
   socket.on("add-user", (userId) => {
     onlineUsers.set(userId, socket.id);
+    console.log(userId, socket.id);
     socket.broadcast.emit("online-users", () => {
       onlineUsers: Array.from(onlineUsers.keys());
     });
   });
 
+  socket.on("delete-msg", (data) => {
+    console.log(data);
+    const recieverUser = onlineUsers.get(data.to);
+    if (recieverUser) {
+      console.log(recieverUser);
+      socket.emit("msg-deleted", {
+        id: data.id,
+        to: data.to,
+      });
+    }
+  });
   socket.on("send-msg", (data) => {
     const sendUserSocket = onlineUsers.get(data.to);
+    console.log(data.message.message, sendUserSocket);
     if (sendUserSocket) {
       socket.to(sendUserSocket).emit("msg-receive", {
         from: data.from,

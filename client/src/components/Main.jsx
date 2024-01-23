@@ -67,6 +67,7 @@ function Main() {
   useEffect(() => {
     if (socket.current && !socketEvent) {
       socket.current.on("msg-receive", (data) => {
+        console.log("msg received");
         dispatch({
           type: reducerCases.ADD_MESSAGE,
           newMessage: {
@@ -75,6 +76,9 @@ function Main() {
         });
       });
 
+      socket.current.on("msg-deleted", (data) => {
+        console.log(data);
+      });
       socket.current.on("incoming-voice-call", ({from, roomId, callType}) => {
         dispatch({
           type: reducerCases.SET_INCOMING_VOICE_CALL,
@@ -101,6 +105,7 @@ function Main() {
         });
 
         socket.current.on("online-users", ({onlineUsers}) => {
+          console.log("current online users", onlineUsers);
           dispatch({
             type: reducerCases.SET_ONLINE_USERS,
             onlineUsers,

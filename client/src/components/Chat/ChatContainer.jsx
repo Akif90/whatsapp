@@ -8,15 +8,34 @@ import ContextMenu from "../common/ContextMenu";
 import axios from "axios";
 import {DELETE_MESSAGE} from "@/utils/ApiRoutes";
 const VoiceMessage = dynamic(() => import("./VoiceMessage"), {ssr: false});
+import {MdDeleteOutline} from "react-icons/md";
+import {reducerCases} from "@/context/constants";
+import {Socket} from "socket.io-client";
 
 function ChatContainer() {
-  const [{messages, currentChatUser, userInfo}] = useStateProvider();
-
+  const [{messages, currentChatUser, userInfo, socket}, dispatch] =
+    useStateProvider();
+  const [isContextMenu, setIsContextMenu] = useState(false);
+  const [selectedMessageId, setSelectedMessageId] = useState(null);
   useEffect(() => {
     const container = document.getElementById("scroll-able");
     container.scrollTo(0, container.scrollHeight);
   }, [messages]);
 
+  const handleDelete = async (msgId, userId) => {
+    try {
+      const res = await axios.post(DELETE_MESSAGE + "/" + msgId);
+      if (res.status === 200) {
+        socket.current.emit("delete-msg", {id: msgId, to: userId});
+        dispatch({
+          type: reducerCases.DELETE_MESSAGE,
+          id: msgId,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <div
       id="scroll-able"
@@ -34,10 +53,16 @@ function ChatContainer() {
                     message.senderId === currentChatUser.id
                       ? "justify-start"
                       : "justify-end"
-                  } flex relative`}
+                  } flex`}
                 >
                   {message.type === "text" && (
                     <div
+                      onContextMenu={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setIsContextMenu(true);
+                        setSelectedMessageId(message.id);
+                      }}
                       className={`text-white px-2 py-[5px] text-sm rounded-md
                   flex gap-2 items-end max-w-[45%]  ${
                     message.senderId === currentChatUser.id
@@ -66,6 +91,25 @@ function ChatContainer() {
                   {message.type === "audio" && (
                     <VoiceMessage message={message} />
                   )}
+
+                  {isContextMenu &&
+                    selectedMessageId === message.id &&
+                    message.senderId !== currentChatUser.id && (
+                      <div
+                        className={`w-7 h-7  ${
+                          message.senderId === currentChatUser.id
+                            ? "order-1"
+                            : "-order-1"
+                        }   flex justify-center items-center `}
+                      >
+                        <MdDeleteOutline
+                          onClick={() =>
+                            handleDelete(message.id, message.receiverId)
+                          }
+                          className="w-full h-full text-white"
+                        />
+                      </div>
+                    )}
                 </div>
               );
             })}
